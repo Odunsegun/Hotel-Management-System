@@ -34,6 +34,14 @@ public class BookingController {
         model.addAttribute("bookings", bookingService.getAllBookings());
         return "bookings";
     }
+    
+    @GetMapping("/","bookings")
+    public String getbookings(Model model) {
+        model.addAttribute("booking", new Booking());
+        model.addAttribute("customers", customerService.getAllCustomers());
+        model.addAttribute("rooms", roomService.getAllRooms());
+        return "bookings";
+    }
 
     @GetMapping("/add")
     public String showAddBookingForm(Model model) {
