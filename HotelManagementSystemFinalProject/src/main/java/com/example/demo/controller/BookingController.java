@@ -32,16 +32,17 @@ public class BookingController {
     @GetMapping
     public String listBookings(Model model) {
         model.addAttribute("bookings", bookingService.getAllBookings());
-        return "bookings";
+        return "bookings";S
     }
     
-    @GetMapping("/","bookings")
-    public String getbookings(Model model) {
+    @GetMapping("/")
+    public String getBookings(Model model) {
         model.addAttribute("booking", new Booking());
         model.addAttribute("customers", customerService.getAllCustomers());
         model.addAttribute("rooms", roomService.getAllRooms());
         return "bookings";
     }
+
 
     @GetMapping("/add")
     public String showAddBookingForm(Model model) {
@@ -50,7 +51,7 @@ public class BookingController {
         model.addAttribute("rooms", roomService.getAllRooms());
         return "bookings";
     }
-
+S
     @PostMapping("/add")
     public String addBooking(@ModelAttribute Booking booking) {
         bookingService.addBooking(booking);
