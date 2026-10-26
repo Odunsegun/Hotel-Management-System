@@ -1,32 +1,67 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <meta charset="UTF-8">
     <title>Customers</title>
-    <link th:href="@{/style.css}" rel="stylesheet" />
 </head>
 <body>
-    <header>
+<section>
+    <div class="page-header">
         <h1>Customer Management</h1>
-        <!-- Navigation links -->
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/bookings}">Bookings</a>
-            <a th:href="@{/rustomers}">Customers</a>
-            <a th:href="@{/rooms}">Rooms</a>
-            <a th:href="@{/services}">Services</a>
-        </nav>
-    </header>
+        <p>Manage guest profiles and contact information.</p>
+    </div>
 
-    <section id="list-customers">
-        <h2>List of Customers</h2>
-    </section>
+    <div class="two-column">
+        <div class="card">
+            <div class="card-header">
+                <h2>All Customers</h2>
+            </div>
+            <table class="data-table" th:if="${!customers.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${customers}">
+                    <td th:text="${c.name}">Name</td>
+                    <td th:text="${c.email}">Email</td>
+                    <td th:text="${c.phoneNumber}">Phone</td>
+                    <td class="actions">
+                        <a th:href="@{/customers/edit/{id}(id=${c.id})}" class="btn btn-sm">Edit</a>
+                        <form sec:authorize="hasRole('ADMIN')" th:action="@{/customers/delete/{id}(id=${c.id})}" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this customer?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="empty-state" th:if="${customers.isEmpty()}">No customers yet. Add one using the form.</p>
+        </div>
 
-    <section id="add-update-customer">
-        <h2>Add/Update Customer</h2>
-        <form th:action="@{/customers/save}" th:method="post">
-            <label for="customerName">Name:</label>
-            <input type="text" id="customerName" name="customerName" required>
-            <button type="submit">Save Customer</button>
-        </form>
-    </section>
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="${customer.id != null} ? 'Edit Customer' : 'Add Customer'">Add Customer</h2>
+            </div>
+            <form th:action="@{/customers/save}" th:object="${customer}" method="post" class="form">
+                <input type="hidden" th:field="*{id}">
+                <label for="name">Name</label>
+                <input type="text" id="name" th:field="*{name}" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" th:field="*{email}" required>
+
+                <label for="phoneNumber">Phone</label>
+                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required>
+
+                <button type="submit" class="btn btn-primary">Save Customer</button>
+                <a th:href="@{/customers}" class="btn btn-outline" th:if="${customer.id != null}">Cancel</a>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Invoice</title>
+</head>
+<body>
+<section>
+    <div class="page-header invoice-header">
+        <div>
+            <h1>Invoice</h1>
+            <p th:text="'Booking #' + ${booking.id}">Booking #1</p>
+        </div>
+        <div class="invoice-actions">
+            <button onclick="window.print()" class="btn btn-primary">Print Invoice</button>
+            <a th:href="@{/bookings}" class="btn btn-outline">Back to Bookings</a>
+        </div>
+    </div>
+
+    <div class="card invoice-card">
+        <div class="invoice-meta">
+            <div>
+                <h3>Grand Horizon Hotel</h3>
+                <p>123 Luxury Avenue, City Center</p>
+                <p>invoice@grandhorizon.com</p>
+            </div>
+            <div class="invoice-meta-right">
+                <p><strong>Date:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">2026-01-01</span></p>
+                <p><strong>Status:</strong>
+                    <span class="badge" th:classappend="${booking.status.name() == 'CONFIRMED'} ? ' badge-success' : ' badge-muted'"
+                          th:text="${booking.status}">CONFIRMED</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="invoice-guest">
+            <h3>Guest Details</h3>
+            <p th:text="${booking.customer.name}">Guest Name</p>
+            <p th:text="${booking.customer.email}">email@example.com</p>
+            <p th:text="${booking.customer.phoneNumber}">555-0000</p>
+        </div>
+
+        <table class="data-table invoice-table">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Details</th>
+                <th class="text-right">Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Room Stay</td>
+                <td th:text="${booking.room.type + ' (Room ' + booking.room.roomNumber + ') - ' + booking.nights + ' night(s) @ $' + #numbers.formatDecimal(booking.nightlyRate, 1, 2) + '/night'}">
+                    Room details
+                </td>
+                <td class="text-right" th:text="${'$' + #numbers.formatDecimal(booking.roomTotal, 1, 2)}">$0.00</td>
+            </tr>
+            <tr th:each="service : ${booking.services}">
+                <td th:text="${service.name}">Service</td>
+                <td th:text="${service.description}">Description</td>
+                <td class="text-right" th:text="${'$' + #numbers.formatDecimal(booking.servicePrices[service.id], 1, 2)}">$0.00</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr class="invoice-total">
+                <td colspan="2"><strong>Grand Total</strong></td>
+                <td class="text-right"><strong th:text="${'$' + #numbers.formatDecimal(booking.grandTotal, 1, 2)}">$0.00</strong></td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div class="invoice-footer-note">
+            <p>Check-in: <span th:text="${booking.startDate}">Start</span> | Check-out: <span th:text="${booking.endDate}">End</span></p>
+            <p>Thank you for staying with Grand Horizon Hotel.</p>
+        </div>
+    </div>
+</section>
+</body>
+</html>

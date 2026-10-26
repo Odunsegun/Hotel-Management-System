@@ -1,27 +1,71 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <meta charset="UTF-8">
-    <title>Home</title>
-    <link th:href="@{/style.css}" rel="stylesheet" />
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Dashboard</title>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Our Hotel</h1>
-        <!-- Navigation links -->
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/bookings}">Bookings</a>
-            <a th:href="@{/rooms}">Rooms</a>
-            <a th:href="@{/customers}">Customers</a>
-            <a th:href="@{/services}">Services</a>
-        </nav>
-    </header>
+<section>
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Welcome back. Here is your hotel at a glance.</p>
+    </div>
 
-    <section>
-        <h2>About Us</h2>
-        <p>Welcome to our luxurious hotel where you can relax and enjoy top-notch services.</p>
-    </section>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total Rooms</span>
+            <span class="stat-value" th:text="${stats.roomCount}">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Customers</span>
+            <span class="stat-value" th:text="${stats.customerCount}">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Active Bookings</span>
+            <span class="stat-value" th:text="${stats.activeBookings}">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Check-ins Today</span>
+            <span class="stat-value" th:text="${stats.checkInsToday}">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Check-outs Today</span>
+            <span class="stat-value" th:text="${stats.checkOutsToday}">0</span>
+        </div>
+    </div>
 
+    <div class="card">
+        <div class="card-header">
+            <h2>Recent Bookings</h2>
+            <a th:href="@{/bookings}" class="btn btn-primary">View All</a>
+        </div>
+        <table class="data-table" th:if="${!stats.recentBookings.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Guest</th>
+                <th>Room</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Status</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="booking : ${stats.recentBookings}">
+                <td th:text="${booking.customer.name}">Guest</td>
+                <td th:text="${booking.room.roomNumber + ' - ' + booking.room.type}">Room</td>
+                <td th:text="${booking.startDate}">Start</td>
+                <td th:text="${booking.endDate}">End</td>
+                <td>
+                    <span class="badge" th:classappend="${booking.status.name() == 'CONFIRMED'} ? ' badge-success' : ' badge-muted'"
+                          th:text="${booking.status}">Status</span>
+                </td>
+                <td th:text="${'$' + #numbers.formatDecimal(booking.grandTotal, 1, 2)}">$0.00</td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="empty-state" th:if="${stats.recentBookings.isEmpty()}">No bookings yet. Create one from the Bookings page.</p>
+    </div>
+</section>
 </body>
 </html>

@@ -1,32 +1,67 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <meta charset="UTF-8">
     <title>Rooms</title>
-    <link th:href="@{/style.css}" rel="stylesheet" />
 </head>
 <body>
-    <header>
-        <h1>Rooms Management</h1>
-        <!-- Navigation links -->
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/bookings}">Bookings</a>
-            <a th:href="@{/rustomers}">Customers</a>
-            <a th:href="@{/rooms}">Rooms</a>
-            <a th:href="@{/services}">Services</a>
-        </nav>
-    </header>
+<section>
+    <div class="page-header">
+        <h1>Room Management</h1>
+        <p>Manage room inventory, types, and nightly rates.</p>
+    </div>
 
-    <section id="list-rooms">
-        <h2>Available Rooms</h2>
-    </section>
+    <div class="two-column">
+        <div class="card">
+            <div class="card-header">
+                <h2>All Rooms</h2>
+            </div>
+            <table class="data-table" th:if="${!rooms.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Type</th>
+                    <th>Price/Night</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rooms}">
+                    <td th:text="${r.roomNumber}">101</td>
+                    <td th:text="${r.type}">Deluxe</td>
+                    <td th:text="${'$' + #numbers.formatDecimal(r.price, 1, 2)}">$0.00</td>
+                    <td class="actions" sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/rooms/edit/{id}(id=${r.id})}" class="btn btn-sm">Edit</a>
+                        <form sec:authorize="hasRole('ADMIN')" th:action="@{/rooms/delete/{id}(id=${r.id})}" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this room?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="empty-state" th:if="${rooms.isEmpty()}">No rooms yet. Add one using the form.</p>
+        </div>
 
-    <section id="add-update-room">
-        <h2>Add/Update Room</h2>
-        <form th:action="@{/rooms/save}" th:method="post">
-            <label for="roomNumber">Room Number:</label>
-            <input type="text" id="roomNumber" name="roomNumber" required>
-            <button type="submit">Save Room</button>
-        </form>
-    </section>
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="${room.id != null} ? 'Edit Room' : 'Add Room'">Add Room</h2>
+            </div>
+            <form sec:authorize="hasRole('ADMIN')" th:action="@{/rooms/save}" th:object="${room}" method="post" class="form">
+                <input type="hidden" th:field="*{id}">
+                <label for="roomNumber">Room Number</label>
+                <input type="number" id="roomNumber" th:field="*{roomNumber}" min="1" required>
+
+                <label for="type">Type</label>
+                <input type="text" id="type" th:field="*{type}" placeholder="e.g. Deluxe, Suite, Standard" required>
+
+                <label for="price">Price per Night ($)</label>
+                <input type="number" id="price" th:field="*{price}" step="0.01" min="0.01" required>
+
+                <button type="submit" class="btn btn-primary">Save Room</button>
+                <a th:href="@{/rooms}" class="btn btn-outline" th:if="${room.id != null}">Cancel</a>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>

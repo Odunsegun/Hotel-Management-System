@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">Hotel Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="container header-inner">
+        <div class="brand">
+            <span class="brand-icon">&#9733;</span>
+            <span class="brand-text">Grand Horizon Hotel</span>
+        </div>
+        <nav class="main-nav">
+            <a th:href="@{/}">Dashboard</a>
+            <a th:href="@{/bookings}">Bookings</a>
+            <a th:href="@{/customers}">Customers</a>
+            <a th:href="@{/rooms}">Rooms</a>
+            <a th:href="@{/services}">Services</a>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="btn btn-outline">Logout</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+    <div th:replace="${content}">Content</div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; 2026 Grand Horizon Hotel Management System</p>
+    </div>
+</footer>
+</body>
+</html>

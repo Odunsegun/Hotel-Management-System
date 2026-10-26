@@ -4,79 +4,85 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class ProvidedService {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String description;
-    private double price;
 
-    @ManyToOne
-    private Booking booking;
+    @NotNull
+    @Positive
+    private BigDecimal price;
 
-    // constructors
+    @ManyToMany(mappedBy = "services")
+    private List<Booking> bookings = new ArrayList<>();
+
     public ProvidedService() {
     }
 
-    public ProvidedService(String name, String description, double price) {
+    public ProvidedService(String name, String description, BigDecimal price) {
         this.name = name;
         this.description = description;
         this.price = price;
     }
 
-    // getters and setters
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public double getPrice() {
-		return price;
-	}
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-	public void setPrice(double price) {
-		this.price = price;
-	}
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 
-	public Booking getBooking() {
-		return booking;
-	}
+    public List<Booking> getBookings() {
+        return bookings;
+    }
 
-	public void setBooking(Booking booking) {
-		this.booking = booking;
-	}
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
 
-	// to string
-	@Override
-	public String toString() {
-		return "ProvidedService [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price
-				+ ", booking=" + booking + "]";
-	}
-
-    
-
+    @Override
+    public String toString() {
+        return "ProvidedService [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price + "]";
+    }
 }
